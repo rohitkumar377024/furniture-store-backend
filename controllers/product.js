@@ -33,6 +33,7 @@ const create = async (req, res) => {
     const created = await new Product({
       name: req.body.name,
       price: req.body.price,
+      category: req.body.category,
       productID: req.body.productID
     }).save();
 
@@ -48,7 +49,12 @@ const updateOne = async (req, res) => {
     const productID = req.params.productID;
     const updated = await Product.updateOne(
       { productID },
-      { name: req.body.name, price: req.body.price, productID: req.body.productID }
+      {
+        name: req.body.name,
+        price: req.body.price,
+        productID: req.body.productID,
+        category: req.body.category
+      }
     );
 
     updated.nModified === 0

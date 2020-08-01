@@ -7,7 +7,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const productRoute = require('./routes/product');
+const categoryRoute = require('./routes/category');
 app.use('/products', productRoute);
+app.use('/category', categoryRoute);
 
 app.use((req, res) => res.json({ status: 'error', message: '404 Not Found.' }));
 
