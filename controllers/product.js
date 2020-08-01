@@ -79,10 +79,25 @@ const deleteOne = async (req, res) => {
   }
 };
 
+// Shows search results for products query
+const search = async (req, res) => {
+  const query = req.query.q;
+
+  const allProducts = await Product.find();
+  const allProductNames = allProducts.map(product => product.name.toLowerCase());
+
+  const foundProducts = allProductNames.filter(productName =>
+    productName.includes(query.toLowerCase())
+  );
+
+  res.json({ status: 'success', message: foundProducts });
+};
+
 module.exports = {
   findAll,
   findOne,
   create,
   updateOne,
-  deleteOne
+  deleteOne,
+  search
 };
