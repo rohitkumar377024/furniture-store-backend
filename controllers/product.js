@@ -1,21 +1,48 @@
+const { Product } = require('../models/product');
+
+// Returns all the products
 const findAll = async (req, res) => {
-  res.send('List of Products - READ');
+  const allProducts = await Product.find();
+
+  res.json({ status: 'success', message: allProducts });
 };
 
+// Returns details of a specific product
 const findOne = async (req, res) => {
-  res.send('One Product - READ');
+  const productID = req.params.productID;
+  const productFound = await Product.findOne({ productID });
+
+  res.json({ status: 'success', message: productFound });
 };
 
+// Creates a new product
 const create = async (req, res) => {
-  res.send('Create Product - CREATE');
+  const created = await new Product({
+    name: 'White Sofa',
+    price: 7999,
+    productID: 21409
+  }).save();
+
+  res.json({ status: 'success', message: created });
 };
 
+// Updates details of a specific product
 const updateOne = async (req, res) => {
-  res.send('Update Product - UPDATE');
+  const productID = req.params.productID;
+  const updated = await Product.updateOne(
+    { productID },
+    { name: req.body.name, price: req.body.price, productID: req.body.productID }
+  );
+
+  res.json({ status: 'success', message: updated });
 };
 
+// Deletes a specific product
 const deleteOne = async (req, res) => {
-  res.send('Delete Product - DELETE');
+  const productID = req.params.productID;
+  const deleted = await Product.deleteOne({ productID });
+
+  res.json({ status: 'success', message: deleted });
 };
 
 module.exports = {
