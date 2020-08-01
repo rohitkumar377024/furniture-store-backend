@@ -86,8 +86,8 @@ const search = async (req, res) => {
   const allProducts = await Product.find();
   const allProductNames = allProducts.map(product => product.name.toLowerCase());
 
-  const foundProducts = allProductNames.filter(productName =>
-    productName.includes(query.toLowerCase())
+  const foundProducts = allProducts.filter(product =>
+    product.name.toLowerCase().includes(query.toLowerCase())
   );
 
   res.json({ status: 'success', message: foundProducts });
