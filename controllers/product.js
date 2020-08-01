@@ -2,47 +2,75 @@ const { Product } = require('../models/product');
 
 // Returns all the products
 const findAll = async (req, res) => {
-  const allProducts = await Product.find();
+  try {
+    const allProducts = await Product.find();
 
-  res.json({ status: 'success', message: allProducts });
+    allProducts.length === 0
+      ? res.json({ status: 'error', message: 'No products.' })
+      : res.json({ status: 'success', message: allProducts });
+  } catch (e) {
+    res.json({ status: 'error', message: e });
+  }
 };
 
 // Returns details of a specific product
 const findOne = async (req, res) => {
-  const productID = req.params.productID;
-  const productFound = await Product.findOne({ productID });
+  try {
+    const productID = req.params.productID;
+    const productFound = await Product.findOne({ productID });
 
-  res.json({ status: 'success', message: productFound });
+    productFound === null
+      ? res.json({ status: 'error', message: 'Product not found.' })
+      : res.json({ status: 'success', message: productFound });
+  } catch (e) {
+    res.json({ status: 'error', message: e });
+  }
 };
 
 // Creates a new product
 const create = async (req, res) => {
-  const created = await new Product({
-    name: 'White Sofa',
-    price: 7999,
-    productID: 21409
-  }).save();
+  try {
+    const created = await new Product({
+      name: req.body.name,
+      price: req.body.price,
+      productID: req.body.productID
+    }).save();
 
-  res.json({ status: 'success', message: created });
+    res.json({ status: 'success', message: created });
+  } catch (e) {
+    res.json({ status: 'error', message: e });
+  }
 };
 
 // Updates details of a specific product
 const updateOne = async (req, res) => {
-  const productID = req.params.productID;
-  const updated = await Product.updateOne(
-    { productID },
-    { name: req.body.name, price: req.body.price, productID: req.body.productID }
-  );
+  try {
+    const productID = req.params.productID;
+    const updated = await Product.updateOne(
+      { productID },
+      { name: req.body.name, price: req.body.price, productID: req.body.productID }
+    );
 
-  res.json({ status: 'success', message: updated });
+    updated.nModified === 0
+      ? res.json({ status: 'error', message: 'Product could not be updated.' })
+      : res.json({ status: 'success', message: 'Product updated successfully.' });
+  } catch (e) {
+    res.json({ status: 'error', message: e });
+  }
 };
 
 // Deletes a specific product
 const deleteOne = async (req, res) => {
-  const productID = req.params.productID;
-  const deleted = await Product.deleteOne({ productID });
+  try {
+    const productID = req.params.productID;
+    const deleted = await Product.deleteOne({ productID });
 
-  res.json({ status: 'success', message: deleted });
+    deleted.n === 0
+      ? res.json({ status: 'error', message: 'Product could not be deleted.' })
+      : res.json({ status: 'success', message: 'Product deleted successfully.' });
+  } catch (e) {
+    res.json({ status: 'error', message: e });
+  }
 };
 
 module.exports = {
