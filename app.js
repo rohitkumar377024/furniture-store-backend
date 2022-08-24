@@ -17,7 +17,7 @@ app.use("/category", categoryRoute);
 
 app.use((req, res) => res.json({ status: "error", message: "404 Not Found." }));
 
-app.listen(3000, () =>
+app.listen(5000, () =>
   mongoose.connect(
     "mongodb+srv://admin-rohit:test123@cluster0-exv7e.mongodb.net/furniture-store"
   )
