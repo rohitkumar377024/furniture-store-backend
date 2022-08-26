@@ -22,5 +22,5 @@ app.use((req, res) => res.json({ status: "error", message: "404 Not Found." }));
 app.listen(5000, () =>
   mongoose.connect(
     "mongodb+srv://admin-rohit:test123@cluster0-exv7e.mongodb.net/furniture-store"
-  ).then(() => console.log('Server Started on PORT 5000'))
+    , { useUnifiedTopology: true, useNewUrlParser: true }).then(() => console.log('Server Started on PORT 5000'))
 );
