@@ -23,12 +23,12 @@ const UserSchema = Schema({
     trim: true,
     require: true,
   },
-  type: {
-    type: String,
-    enum: ["Social", "Sales"],
-    trim: true,
-    require: true,
-  },
+  // type: {
+  //   type: String,
+  //   enum: ["Social", "Sales"],
+  //   trim: true,
+  //   require: true,
+  // },
 });
 
 module.exports = model("user", UserSchema);

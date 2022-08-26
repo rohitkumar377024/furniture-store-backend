@@ -6,14 +6,14 @@ const { sendResponse } = require("../utils/response");
 const { isEmail, isPhoneNumber } = require("../utils/validation");
 
 exports.createUser = async (req, res) => {
-  const { name, phoneNumber, emailAddress, password, type } = req.body;
+  const { name, phoneNumber, emailAddress, password } = req.body;
 
   // Validation
   !name && sendResponse(res, 400, "Name field cannot be empty", "");
   !phoneNumber && sendResponse(res, 400, "Phone number cannot be empty", "");
   !emailAddress && sendResponse(res, 400, "Email address cannot be empty", "");
   !password && sendResponse(res, 400, "Password field cannot be empty", "");
-  !type && sendResponse(res, 400, "Type field cannot be empty", "");
+  // !type && sendResponse(res, 400, "Type field cannot be empty", "");
 
   phoneNumber &&
     (phoneNumber.length !== 10 || !isPhoneNumber(phoneNumber)) &&
@@ -23,9 +23,9 @@ exports.createUser = async (req, res) => {
     password.length < 6 &&
     sendResponse(res, 400, "Password must contain 6 or more digits", "");
 
-  const types = ["Social", "Sales"];
-  !types.includes(type) &&
-    sendResponse(res, 400, "Type must be either Social or Sales", "");
+  // const types = ["Social", "Sales"];
+  // !types.includes(type) &&
+  //   sendResponse(res, 400, "Type must be either Social or Sales", "");
 
   emailAddress &&
     !isEmail(emailAddress) &&
@@ -52,7 +52,7 @@ exports.createUser = async (req, res) => {
       phoneNumber,
       emailAddress,
       password: encryptedPassword,
-      type,
+      // type,
     }).save();
 
     // Create token

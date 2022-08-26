@@ -6,10 +6,23 @@ const { sendResponse } = require("../utils/response");
 const findAll = async (req, res) => {
   try {
     const allProducts = await Product.find();
+    const result = []
 
-    allProducts.length === 0
+    for (const product of allProducts) {
+      // Check if category exists and is valid
+      const categoryValid = await Category.findOne({ _id: product.categoryID })
+
+      if (categoryValid == null) {
+        sendResponse(res, 400, "Category ID is not valid", "");
+        return;
+      } else {
+        result.push({ ...product._doc, category: categoryValid._doc })
+      }
+    }
+
+    result.length === 0
       ? sendResponse(res, 400, "No products found", "")
-      : sendResponse(res, 200, "", allProducts);
+      : sendResponse(res, 200, "", result);
   } catch (e) {
     console.log(e);
     sendResponse(
@@ -31,9 +44,17 @@ const findOne = async (req, res) => {
 
     const productFound = await Product.findOne({ _id: id });
 
-    productFound === null
-      ? sendResponse(res, 400, "Product not found", "")
-      : sendResponse(res, 200, "", productFound);
+    // Check if category exists and is valid
+    const categoryValid = await Category.findOne({ _id: productFound?.categoryID })
+
+    if (categoryValid == null) {
+      sendResponse(res, 400, "Category ID is not valid", "");
+      return;
+    } else {
+      productFound === null
+        ? sendResponse(res, 400, "Product not found", "")
+        : sendResponse(res, 200, "", { ...productFound._doc, category: categoryValid._doc });
+    }
   } catch (e) {
     console.log(e);
     sendResponse(
