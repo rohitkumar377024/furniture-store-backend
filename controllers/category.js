@@ -1,4 +1,3 @@
-const { Product } = require("../models/product");
 const Category = require("../models/category");
 const { sendResponse } = require("../utils/response");
 
