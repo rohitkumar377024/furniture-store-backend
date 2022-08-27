@@ -288,5 +288,3 @@ exports.removeFromCart = async (req, res) => {
     sendResponse(res, 400, "Error occurred while trying to remove from cart", "");
   }
 }
-
-

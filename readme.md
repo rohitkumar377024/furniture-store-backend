@@ -7,4 +7,4 @@
 
 [x] Remove type from Users API
 
-[ ] Cart - Get All, Add, Remove
+[x] Cart - Get All, Add, Remove
