@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { Product } = require("../models/product");
 const Token = require("../models/token.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -52,6 +53,10 @@ exports.createUser = async (req, res) => {
       phoneNumber,
       emailAddress,
       password: encryptedPassword,
+      cart: {
+        items: [],
+        total: 0
+      }
       // type,
     }).save();
 
@@ -200,5 +205,88 @@ exports.resetPassword = async (req, res) => {
 
   sendResponse(res, 200, "", result);
 };
+
+exports.getCart = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findOne({ _id: id });
+    sendResponse(res, 200, "", user?.cart);
+  } catch (e) {
+    console.log(e);
+    sendResponse(res, 400, "Error occurred while trying to fetch user", "");
+  }
+}
+
+exports.addToCart = async (req, res) => {
+  const { id } = req.params;
+  const { productId } = req.body;
+
+  // Validation
+  !id && sendResponse(res, 400, "User ID field cannot be empty", "");
+  !productId && sendResponse(res, 400, "Product ID field cannot be empty", "");
+
+  try {
+    const user = await User.findOne({ _id: id });
+    const product = await Product.findOne({ _id: productId });
+
+    const productIDStr = `${productId}`
+
+    if (user?.cart?.items.map(x => x?.productID).includes(productIDStr)) {
+      // Increment quantity
+      const itemIdx = user?.cart?.items?.findIndex(x => x?.productID == productIDStr)
+      await User.updateOne({ _id: id, "cart.items.productID": productIDStr }, { $set: { "cart.items.$.quantity": user?.cart?.items[itemIdx].quantity + 1 } })
+    } else {
+      // Add new item to cart
+      const newCartItem = {
+        name: product?.name,
+        price: product?.price,
+        productID: product?._id,
+        quantity: 1
+      }
+
+      await User.updateOne({ _id: id }, { $push: { "cart.items": newCartItem } })
+    }
+
+    // Increment cart total by product's price
+    await User.updateOne({ _id: id }, { $set: { "cart.total": user?.cart?.total + product?.price } })
+
+    sendResponse(res, 200, "", "Added to cart successfully");
+  } catch (e) {
+    console.log(e);
+    sendResponse(res, 400, "Error occurred while trying to add to cart", "");
+  }
+}
+
+exports.removeFromCart = async (req, res) => {
+  const { id } = req.params;
+  const { productId } = req.body;
+
+  // Validation
+  !id && sendResponse(res, 400, "User ID field cannot be empty", "");
+  !productId && sendResponse(res, 400, "Product ID field cannot be empty", "");
+
+  try {
+    const user = await User.findOne({ _id: id });
+    const product = await Product.findOne({ _id: productId });
+    const productIDStr = `${productId}`
+
+    const filteredCart = user?.cart?.items.filter(cartItem => cartItem?.productID != productIDStr)
+    const itemToRemove = user?.cart?.items.find(x => x.productID == productIDStr)
+
+    // Reduce the cart total by product of removed product's price and quantity
+    await User.updateOne({ _id: id }, { $set: { "cart.total": user?.cart?.total - (itemToRemove?.price * itemToRemove?.quantity) } })
+
+    const result = await User.updateOne({ _id: id }, { $set: { "cart.items": filteredCart } })
+
+    if (result?.nModified > 0) {
+      sendResponse(res, 200, "", "Removed from cart successfully");
+    } else {
+      sendResponse(res, 200, "", "Could not remove the item from cart");
+    }
+  } catch (e) {
+    console.log(e);
+    sendResponse(res, 400, "Error occurred while trying to remove from cart", "");
+  }
+}
 
 

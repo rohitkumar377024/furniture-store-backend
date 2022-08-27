@@ -23,6 +23,17 @@ const UserSchema = Schema({
     trim: true,
     require: true,
   },
+  cart: {
+    items: [
+      {
+        name: String,
+        price: Number,
+        productID: String,
+        quantity: Number
+      }
+    ],
+    total: Number
+  }
   // type: {
   //   type: String,
   //   enum: ["Social", "Sales"],
